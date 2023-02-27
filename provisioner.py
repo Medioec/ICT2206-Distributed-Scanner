@@ -99,7 +99,7 @@ class Provisioner:
         )
         return async_subnet
 
-    def provision_vm(self, number, sg_result, sn_result):
+    def provision_vm(self, number, sg_result, sn_result, cloudinit: str):
         async_ip = self.network_client.public_ip_addresses.begin_create_or_update(
             self.rg.name,
             self.IP_NAME + str(number),
@@ -154,6 +154,7 @@ class Provisioner:
                     "computer_name": VM_NAME,
                     "admin_username": VMUSERNAME,
                     "admin_password": PASSWORD,
+                    "custom_data": cloudinit,
                 },
                 "network_profile": {
                     "network_interfaces": [

@@ -4,6 +4,8 @@ from azure_management import *
 
 
 def main(argv):
+    display_notice()
+    check_powershell()
     az = Azure()
     while True:
         display_main_options()
@@ -12,10 +14,15 @@ def main(argv):
             new_scanner(az)
         elif usrinput == 2:
             delete_scanner(az)
+        elif usrinput == 8:
+            az.generate_cloud_init_string()
+        elif usrinput == 9:
+            install_k3s()
 
 
 def new_scanner(az: Azure):
     number = display_scanner_options()
+    az.generate_cloud_init_string()
     az.create_vms(number)
 
 
@@ -31,6 +38,8 @@ def display_main_options():
     print("""
             [1] Create new scanner
             [2] Delete all scanners
+            [8] Generate cloud init
+            [9] Install k3s
             """)
 
 
@@ -42,25 +51,39 @@ def display_scanner_options():
     return num
 
 
+def display_notice():
+    print("This tool will automatically install required software. Proceed? (Y/N)")
+    usrin = input()
+    if usrin == "Y" or usrin == "y" or usrin == "":
+        return
+    else:
+        sys.exit(0)
+
+
+def check_powershell():
+    try:
+        subprocess.run("pwsh -Command echo ''".split())
+    except:
+        install_powershell()
+
+
 def install_powershell():
     print("Installing powershell")
     subprocess.run("wget https://github.com/PowerShell/PowerShell/releases/download/v7.3.2/powershell_7.3.2-1.deb_amd64.deb".split())
-    subprocess.run("sudo apt install ./powershell-lts_7.3.2-1.deb_amd64.deb".split())
-    res = subprocess.run("pwsh -Command echo \"Powershell installed successfully\"", capture_output=True)
-    teststr = res.stdout.decode().strip()
-    if teststr != "Powershell installed successfully":
+    subprocess.run("sudo apt install ./powershell_7.3.2-1.deb_amd64.deb".split())
+    try:
+        check_powershell()
+    except:
         print("Unable to install powershell, please install manually")
+    finally:
+        os.remove("powershell_7.3.2-1.deb_amd64.deb")
 
 
 def install_k3s():
     print("Installing k3s")
-    subprocess.run("curl -sfL https://get.k3s.io | sudo sh -")
-
-
-def get_k3s_token():
-    fd = open("/var/lib/rancher/k3s/server/node-token", "r")
-    token = fd.read()
-    return token
+    subprocess.run("curl -sfL https://get.k3s.io -o k3sinstall.sh".split())
+    subprocess.run("sudo sh k3sinstall.sh".split())
+    os.remove("k3sinstall.sh")
 
 
 if __name__ == "__main__":
