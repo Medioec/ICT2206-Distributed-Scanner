@@ -3,4 +3,4 @@ from models.resource_group import AZResourceGroup as azrg
 
 @dataclass
 class ScannerData(object):
-    rgs:list[azrg]
+    rg_list: list[azrg]

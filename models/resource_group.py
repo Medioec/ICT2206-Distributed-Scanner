@@ -6,4 +6,4 @@ class AZResourceGroup(object):
     name: str
     location: str
     creation_date: str
-    vm_list:list[VM]
+    vm_list: list[VM]
