@@ -3,7 +3,6 @@ import os
 import subprocess
 import concurrent.futures
 import base64
-from requests import get
 
 from azure.identity import AzurePowerShellCredential
 
@@ -20,7 +19,6 @@ SCANNERDATAFILE = "scannerdata.json"
 class Azure:
     rg_list: list[Azrg] = None
     subscription_id: str = None
-    cloud_init_string: str = ""
 
     def __init__(self):
         self.rg_list = []
@@ -35,7 +33,7 @@ class Azure:
         self.save_info_to_file()
         return rg
 
-    def delete_rg(self):
+    def delete_all_rg(self):
         print("Deleting, this will take a long time")
         templist = []
         with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
@@ -72,7 +70,7 @@ class Azure:
         with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
             templist = []
             for i in range(n):
-                future = executor.submit(prov.provision_vm, i, sg_result, sn_result, self.cloud_init_string)
+                future = executor.submit(prov.provision_vm, i, sg_result, sn_result)
                 templist.append(future)
                 print("Provisioning vm" + str(i))
             for i in range(n):
@@ -96,7 +94,7 @@ class Azure:
                             Install-Module -Name Az -Scope CurrentUser -Repository PSGallery -Force
                         }
                         """])
-        print("Logging in to azure, enter you credentials in the new window")
+        print("Logging in to azure...")
         # for headless linux: pwsh -Command Connect-AzAccount -UseDeviceAuthentication
         subprocess.run(["pwsh", "-Command", "Connect-AzAccount"])
         id = Azure.get_subscription_id()
@@ -133,24 +131,3 @@ class Azure:
         self.rg_list = sdobj.rg_list
         return
 
-
-    def generate_cloud_init_string(self):
-        ip = get("https://api.ipify.org").content.decode()
-        token = Azure.get_k3s_token()
-        print(f"{ip}, {token}")
-        cloud_init_string = (
-            "#cloud-config\n"
-            "runcmd:\n"
-            "  - apt update && apt upgrade -y\n"
-            f"  - curl -sfL https://get.k3s.io | K3S_URL=https://{ip}:6443 K3S_TOKEN={token} sh -"
-        )
-        print(cloud_init_string)
-        cloud_init_string = base64.b64encode(cloud_init_string.encode("utf-8")).decode("latin-1")
-        self.cloud_init_string = cloud_init_string
-
-
-    @staticmethod
-    def get_k3s_token():
-        res = subprocess.run("sudo cat /var/lib/rancher/k3s/server/node-token".split(), capture_output=True)
-        token = res.stdout.decode().strip()
-        return token

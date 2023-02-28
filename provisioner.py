@@ -7,6 +7,7 @@ from azure.mgmt.network import NetworkManagementClient
 from azure.mgmt.network.models import NetworkSecurityGroup, SecurityRule
 
 from models.resource_group import AZResourceGroup as Azrg
+import utility
 
 NAME_PREFIX = "BunshinScanner"
 VMUSERNAME = "bunshin"
@@ -99,7 +100,7 @@ class Provisioner:
         )
         return async_subnet
 
-    def provision_vm(self, number, sg_result, sn_result, cloudinit: str):
+    def provision_vm(self, number, sg_result, sn_result):
         async_ip = self.network_client.public_ip_addresses.begin_create_or_update(
             self.rg.name,
             self.IP_NAME + str(number),
@@ -135,6 +136,8 @@ class Provisioner:
         prefix = f"{NAME_PREFIX}-{self.datetime_str}-"
         VM_NAME = prefix + "vm" + str(number)
         PASSWORD = str(uuid.uuid4())
+        
+        cloud_init = utility.encode_cloud_init(utility.generate_cloud_init(ip_result.ip_address))
 
         async_vm = self.compute_client.virtual_machines.begin_create_or_update(
             self.rg.name,
@@ -154,7 +157,7 @@ class Provisioner:
                     "computer_name": VM_NAME,
                     "admin_username": VMUSERNAME,
                     "admin_password": PASSWORD,
-                    "custom_data": cloudinit,
+                    "custom_data": cloud_init,
                 },
                 "network_profile": {
                     "network_interfaces": [
