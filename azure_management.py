@@ -4,6 +4,7 @@ import subprocess
 import concurrent.futures
 
 from azure.identity import AzurePowerShellCredential
+from azure.core.exceptions import ResourceNotFoundError
 
 import jsonpickle as jspk
 
@@ -36,16 +37,19 @@ class Azure:
     def delete_all_rg(self):
         print("Deleting, this will take a long time")
         templist = []
-        with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
-            for rg in self.rg_list:
-                prov = Provisioner(self.credential, self.subscription_id, rg)
-                poller = prov.delete_resource_group()
-                future = executor.submit(poller.result)
-                templist.append((future, rg.name, rg.location))
-                print("Deleting " + rg.name)
-            for future, name, location in templist:
-                result = future.result()
-                print(f"Deleted resource group {name} in {location} region")
+        try:
+            with concurrent.futures.ThreadPoolExecutor(max_workers=32) as executor:
+                for rg in self.rg_list:
+                    prov = Provisioner(self.credential, self.subscription_id, rg)
+                    poller = prov.delete_resource_group()
+                    future = executor.submit(poller.result)
+                    templist.append((future, rg.name, rg.location))
+                    print("Deleting " + rg.name)
+                for future, name, location in templist:
+                    result = future.result()
+                    print(f"Deleted resource group {name} in {location} region")
+        except ResourceNotFoundError as e:
+            print("Resource group not found, skipping...")
         for rg in self.rg_list:
             for vm in rg.vm_list:
                 delete_node(vm)
