@@ -2,7 +2,6 @@ import sys
 import os
 import subprocess
 import concurrent.futures
-import base64
 
 from azure.identity import AzurePowerShellCredential
 
@@ -12,6 +11,7 @@ from models.resource_group import AZResourceGroup as Azrg
 from models.scanner_data import ScannerData
 from models.vm import VM
 from provisioner import Provisioner
+from kubernetes_management import delete_node
 
 SCANNERDATAFILE = "scannerdata.json"
 
@@ -46,6 +46,9 @@ class Azure:
             for future, name, location in templist:
                 result = future.result()
                 print(f"Deleted resource group {name} in {location} region")
+        for rg in self.rg_list:
+            for vm in rg.vm_list:
+                delete_node(vm)
         if os.path.exists(SCANNERDATAFILE):
             os.remove(SCANNERDATAFILE)
         self.rg_list.clear()
@@ -76,7 +79,7 @@ class Azure:
             for i in range(n):
                 vm_result, username, password, ip = templist[i].result()
                 # vm_result, username, password, ip = prov.provision_vm(i, sg_result, sn_result)
-                rg.vm_list.append(VM(username, password, ip))
+                rg.vm_list.append(VM(username, password, ip, vm_result.name))
                 print(f"Provisioned virtual machine {vm_result.name} with ip address {ip}")
                 self.save_info_to_file()
         return
@@ -96,7 +99,7 @@ class Azure:
                         """])
         print("Logging in to azure...")
         # for headless linux: pwsh -Command Connect-AzAccount -UseDeviceAuthentication
-        subprocess.run(["pwsh", "-Command", "Connect-AzAccount"])
+        subprocess.run(["pwsh", "-Command", "Connect-AzAccount", "-UseDeviceAuthentication"])
         id = Azure.get_subscription_id()
         if id != "":
             creds = AzurePowerShellCredential()
