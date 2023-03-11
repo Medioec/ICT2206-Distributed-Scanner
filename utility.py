@@ -51,15 +51,12 @@ def install_k3s():
 def generate_cloud_init(agent_ip:str):
     master_server_ip = get_device_ip()
     token = get_k3s_token()
-    print("Using the following cloud-init: \n"
-            "############################### \n")
     cloud_init_string = (
-        "#cloud-config\n"
+        "\n#cloud-config\n"
         "runcmd:\n"
         "  - apt update && apt upgrade -y\n"
         f"  - curl -sfL https://get.k3s.io | K3S_URL=https://{master_server_ip}:6443 K3S_TOKEN={token} INSTALL_K3S_EXEC=\"--node-external-ip {agent_ip}\" sh -s -\n"
     )
-    print(cloud_init_string)
     return cloud_init_string
 
 

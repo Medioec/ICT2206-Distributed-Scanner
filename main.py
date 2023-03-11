@@ -13,7 +13,7 @@ def main(argv):
     az = Azure()
     while True:
         display_main_options()
-        usrinput = int(input())
+        usrinput = int(prompt_user_input())
         if usrinput == 1:
             new_scanner(az)
         elif usrinput == 2:
@@ -21,7 +21,8 @@ def main(argv):
         elif usrinput == 3:
             pass
         elif usrinput == 8:
-            utility.generate_cloud_init("<agent ip here>")
+            cinit = utility.generate_cloud_init("<agent ip here>")
+            print(cinit)
         elif usrinput == 9:
             utility.install_k3s()
 
@@ -57,7 +58,7 @@ def display_scanner_options():
 
 
 def display_notice():
-    print("This tool requires root-level permissions and will automatically install required software. Proceed? (Y/N)")
+    print("This tool requires root-level permissions and will automatically install required software. Proceed? (Y/N) ", end="")
     usrin = input()
     if usrin == "Y" or usrin == "y" or usrin == "":
         return
@@ -65,8 +66,14 @@ def display_notice():
         sys.exit(0)
 
 
+def prompt_user_input():
+    print("Selection: ", end="")
+    return input()
+
+
 if __name__ == "__main__":
     try:
         main(sys.argv)
     except KeyboardInterrupt:
+        print("\n\nEnding...\n")
         sys.exit(0)
