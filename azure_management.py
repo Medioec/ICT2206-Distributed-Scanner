@@ -82,7 +82,6 @@ class Azure:
                 print("Provisioning vm" + str(i))
             for i in range(n):
                 vm_result, username, password, ip = templist[i].result()
-                # vm_result, username, password, ip = prov.provision_vm(i, sg_result, sn_result)
                 rg.vm_list.append(VM(username, password, ip, vm_result.name))
                 print(f"Provisioned virtual machine {vm_result.name} with ip address {ip}")
                 self.save_info_to_file()

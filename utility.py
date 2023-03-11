@@ -35,7 +35,7 @@ def install_powershell():
 
 def check_k3s():
     try:
-        subprocess.run("k3s".split(), capture_output=True)
+        subprocess.run("sudo k3s".split(), capture_output=True)
         return True
     except:
         return False

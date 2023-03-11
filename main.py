@@ -18,6 +18,8 @@ def main(argv):
             new_scanner(az)
         elif usrinput == 2:
             delete_scanner(az)
+        elif usrinput == 3:
+            pass
         elif usrinput == 8:
             utility.generate_cloud_init("<agent ip here>")
         elif usrinput == 9:
@@ -41,15 +43,15 @@ def display_main_options():
     print("""
             [1] Create new scanner
             [2] Delete all scanners
-            [8] Generate cloud init
+            [3] Start scan
+            [8] View cloud init template
             [9] Reinstall k3s
             """)
 
 
 def display_scanner_options():
     print("""
-            How many VMs to create?
-            """)
+            How many VMs to create? """, end="")
     num = int(input())
     return num
 
