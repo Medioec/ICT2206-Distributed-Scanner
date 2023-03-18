@@ -36,14 +36,14 @@ def get_all_pod_ips():
 
 def start_daemon_set(vmcount: int):
     print("Starting daemon set")
-    print("Waiting for nodes to be ready")
+    print("Waiting for nodes to be ready, might take some time")
     while True:
         res = subprocess.run("sudo kubectl get nodes | grep Ready", shell=True, capture_output=True)
         nodes = res.stdout.decode().strip().split("\n")
         if len(nodes) == vmcount + 1:
             break
         time.sleep(2)
-        
+    time.sleep(2)
     subprocess.run("sudo kubectl apply -f daemonset.yaml".split())
     time.sleep(2)
     

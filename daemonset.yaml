@@ -18,7 +18,7 @@ spec:
         type: scanner
       containers:
       - name: scanner-daemon
-        image: ec18815/bunshinscanner:latest
+        image: ec18815/bunshinscanner:latest # change this if you build your own image
         command: ["/bin/sh"]
         args: ["-c", "python3 -u /scripts/main.py"]
         volumeMounts:

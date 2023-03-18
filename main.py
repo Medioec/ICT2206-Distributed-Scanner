@@ -25,6 +25,7 @@ def main(argv):
 def display_main_options():
     print("""
             Scanning tool
+            Make sure ports 6443 and 54545 on this device are reachable from the internet
             Please select an option to start:
             """)
     print("""
@@ -44,6 +45,9 @@ def handle_selection(usrinput:str, az:Azure):
         delete_scanner(az)
     elif usrinput == 3:
         vmcount = az.get_number_of_vms()
+        if vmcount == 0:
+            print("No vms available")
+            return
         cmd_example = "\ngobuster dir -u https://www.redapplepie.com -w #wordlist#directory-list.txt\nhydra -l user -P #wordlist#password-list.txt www.redapplepie.com http-head /guac/\n"
         print(
             "Enter command to use for scanning\n"

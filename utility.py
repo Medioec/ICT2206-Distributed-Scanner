@@ -14,11 +14,12 @@ def get_device_ip() -> str:
 
 
 def check_powershell() -> bool:
-    try:
-        subprocess.run("pwsh -Command echo ''".split(), capture_output=True)
-        return True
-    except:
+    p = subprocess.run("pwsh -Command echo ''".split(), capture_output=True)
+    status = p.returncode
+    if status != 0:
         return False
+    else:
+        return True
 
 
 def install_powershell():
@@ -34,11 +35,12 @@ def install_powershell():
 
 
 def check_k3s() -> bool:
-    try:
-        subprocess.run("sudo k3s".split(), capture_output=True)
-        return True
-    except:
+    p = subprocess.run("sudo k3s".split(), capture_output=True)
+    status = p.returncode
+    if status != 0:
         return False
+    else:
+        return True
 
 
 def install_k3s():
