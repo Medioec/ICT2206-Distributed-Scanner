@@ -1,5 +1,0 @@
-Hydra v9.4 (c) 2022 by van Hauser/THC & David Maciejak - Please do not use in military or secret service organizations, or for illegal purposes (this is non-binding, these *** ignore laws and ethics anyway).
-
-Hydra (https://github.com/vanhauser-thc/thc-hydra) starting at 2023-03-18 12:09:29
-[DATA] max 16 tasks per 1 server, overall 16 tasks, 73520 login tries (l:1/p:73520), ~4595 tries per task
-[DATA] attacking http-head://www.redapplepie.com:80/guac/
