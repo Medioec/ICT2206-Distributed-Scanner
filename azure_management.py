@@ -137,3 +137,9 @@ class Azure:
         self.rg_list = sdobj.rg_list
         return
 
+    def get_number_of_vms(self):
+        count = 0
+        for rg in self.rg_list:
+            for vm in rg.vm_list:
+                count += 1
+        return count

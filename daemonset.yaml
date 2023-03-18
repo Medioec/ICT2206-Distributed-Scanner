@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: scanner-daemon-set
+  namespace: default
+  labels:
+    k8s-app: scanner
+spec:
+  selector:
+    matchLabels:
+      name: scanner
+  template:
+    metadata:
+      labels:
+        name: scanner
+    spec:
+      nodeSelector:
+        type: scanner
+      containers:
+      - name: scanner-daemon
+        image: ec18815/bunshinscanner:latest
+        command: ["/bin/sh"]
+        args: ["-c", "python3 -u /scripts/main.py"]
+        volumeMounts:
+        - name: output
+          mountPath: /output/
+        ports:
+        - containerPort: 54545
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: output
+        hostPath:
+          path: /output/
+      
