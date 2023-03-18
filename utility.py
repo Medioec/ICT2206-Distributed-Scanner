@@ -84,4 +84,4 @@ def split_wordlist(filename: str, num: int):
             fd.write(line)
         rem -= 1
         fd.close()
-        
+    word.close()

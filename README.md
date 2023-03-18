@@ -10,7 +10,7 @@ powershell for linux
 
 azure powershell module
 
-This tool will try to install dependencies that are missing
+You must run the pip install command, but the script is able to handle the installation of other missing dependencies not handled by pip.
 
 Make sure the tool is run on a linux host (WSL not supported)
 

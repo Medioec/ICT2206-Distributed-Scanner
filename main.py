@@ -71,9 +71,9 @@ def handle_selection(usrinput:str, az:Azure):
 
 
 def parse_and_send_command(cmd: str, num: int, ip_list: list[str]):
+    filename = ""
     if "#wordlist#" in cmd:
         tokens = cmd.split()
-        filename = ""
         index = 0
         repindex = None
         for token in tokens:
@@ -85,17 +85,19 @@ def parse_and_send_command(cmd: str, num: int, ip_list: list[str]):
             index += 1
         tokens[repindex] = tokens[repindex].replace("#wordlist#", "")
         cmd = " ".join(tokens)
-    
-    utility.split_wordlist(filename, num)
+    if filename != "":
+        utility.split_wordlist(filename, num)
     for i in range(num):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip_list[i], 54545))
-        fd = open(f"{filename}{i}", "r")
-        filestr = "".join(fd.readlines())
-        textstr = f"wordlist\n{filename}\n" + filestr
-        pbytes = bytes(textstr, "utf-8")
-        s.sendall(pbytes)
-        s.close()
+        if filename != "":
+            fd = open(f"{filename}{i}", "r")
+            filestr = "".join(fd.readlines())
+            fd.close()
+            textstr = f"wordlist\n{filename}\n" + filestr
+            pbytes = bytes(textstr, "utf-8")
+            s.sendall(pbytes)
+            s.close()
         
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip_list[i], 54545))
@@ -109,7 +111,7 @@ def start_listener():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind(("", 54545))
-    s.listen(20)
+    s.listen(500)
     while True:
         clientsocket, address = s.accept()
         thread = threading.Thread(target=thread_listener, args=(clientsocket,))
