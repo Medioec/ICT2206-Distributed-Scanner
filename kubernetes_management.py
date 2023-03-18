@@ -20,25 +20,23 @@ def build_docker_image():
     subprocess.run("docker push ec18815/bunshinscanner:latest".split())
 
 
-def import_docker_image():
-    filename = IMAGEFILE
-    subprocess.run(f"sudo k3s ctr images import {filename}".split())
-
-
 def get_all_pod_ips():
     res = subprocess.run("sudo kubectl get pods -o=jsonpath=\"{range .items[*]}{.status.podIP}{','}{end}\"", shell=True, capture_output=True)
     text = res.stdout.decode()
     text = text[:-1]
-    ip_list = []
-    if "no value" in text:
-        return None
     ip_list = text.split(",")
+    for ip in ip_list:
+        if ip == "":
+            time.sleep(1)
+            ip_list = get_all_pod_ips()
+            break
     print(ip_list)
     return ip_list
 
 
 def start_daemon_set(vmcount: int):
     print("Starting daemon set")
+    print("Waiting for nodes to be ready")
     while True:
         res = subprocess.run("sudo kubectl get nodes | grep Ready", shell=True, capture_output=True)
         nodes = res.stdout.decode().strip().split("\n")
@@ -47,4 +45,5 @@ def start_daemon_set(vmcount: int):
         time.sleep(2)
         
     subprocess.run("sudo kubectl apply -f daemonset.yaml".split())
+    time.sleep(2)
     

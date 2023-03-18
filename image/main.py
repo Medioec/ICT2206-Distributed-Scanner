@@ -1,4 +1,5 @@
 from time import sleep
+import sys
 import socket
 import threading
 import subprocess
@@ -17,7 +18,8 @@ def thread_handle_connection(conn: socket.socket):
     strdata = conn.recv(4096).decode()
     strtoken, sep, rem = strdata.partition("\n")
     if strtoken == "command":
-        run_command(rem)
+        ip, sep, rem = rem.partition("\n")
+        run_command(ip, rem)
     elif strtoken == "wordlist":
         filename, sep, rem = rem.partition("\n")
         fd = open(filename, "w")
@@ -31,19 +33,38 @@ def thread_handle_connection(conn: socket.socket):
     return
 
 
-def run_command(com: str):
+def run_command(ip: str, com: str):
     com = com.strip()
+    comlist = com.split()
     try:
-        print("Received" + com)
-        subprocess.run(com.split())
-    except:
-        print(f"Problem running command, attempting apt install {com[0]}")
-        subprocess.run(f"apt install {com[0]}".split())
+        print("Received " + com)
+        run_and_transmit(ip, com)
+    except Exception as e:
+        print(str(e))
+        print(f"Problem running command, attempting apt install {comlist[0]}")
+        run_and_transmit(ip, f"apt install {comlist[0]} -y")
         try:
-            subprocess.run(com.split())
-        except:
+            run_and_transmit(ip, com)
+        except Exception as e:
+            print(str(e))
             print(f"Cannot run command {com}")
     return
+
+
+def run_and_transmit(ip:str, com:str):
+    proc = subprocess.run(["hostname"], capture_output=True)
+    hostname = proc.stdout.decode().strip()
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((ip, 54545))
+    s.send(f"output\n{hostname}.txt\n".encode())
+    proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE)
+    for line in proc.stdout:
+        print(line.decode().rstrip())
+        s.send(line)
+    status = proc.poll()
+    if status != 0:
+        raise Exception("Exit with non 0 status...")
+    s.close()
 
 
 if __name__ == "__main__":
