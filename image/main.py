@@ -69,7 +69,7 @@ def run_and_transmit(ip:str, com:str):
     status = proc.poll()
     if status != 0:
         s.close()
-        raise Exception("Exit with non 0 status...")
+        raise Exception(f"Exit with non 0 status on command {com}")
     s.close()
 
 
