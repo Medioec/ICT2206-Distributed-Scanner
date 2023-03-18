@@ -57,7 +57,6 @@ def handle_selection(usrinput:str, az:Azure):
         start_daemon_set(vmcount)
         ip_list = get_all_pod_ips()
         parse_and_send_command(cmd, vmcount, ip_list)
-        pass
     elif usrinput == 7:
         build_docker_image()
     elif usrinput == 8:
@@ -100,9 +99,7 @@ def parse_and_send_command(cmd: str, num: int, ip_list: list[str]):
         pbytes = bytes(newcmd, "utf-8")
         s.sendall(pbytes)
         s.close()
-        
-    pass
-
+    print("Check the new .output files created for the output. This script needs to remain running to receive output.")
 
 def start_listener():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

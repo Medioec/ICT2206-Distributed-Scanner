@@ -1,5 +1,6 @@
-# For our special data file
+# For our special data files
 scannerdata.json
+*.output
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

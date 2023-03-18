@@ -17,7 +17,8 @@ def build_docker_image():
     subprocess.run(f"docker image build image/. -t bunshinscanner:latest -t bunshinscanner:{hash}".split())
     subprocess.run("docker image tag bunshinscanner:latest ec18815/bunshinscanner:latest".split())
     subprocess.run("docker login".split())
-    subprocess.run("docker push ec18815/bunshinscanner:latest".split())
+    repo = input("Enter your docker repo (e.g. ec18815/bunshinscanner:latest): ")
+    subprocess.run(f"docker push {repo}".split())
 
 
 def get_all_pod_ips():
@@ -30,7 +31,6 @@ def get_all_pod_ips():
             time.sleep(1)
             ip_list = get_all_pod_ips()
             break
-    print(ip_list)
     return ip_list
 
 

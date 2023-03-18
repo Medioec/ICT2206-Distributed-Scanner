@@ -56,7 +56,7 @@ def run_and_transmit(ip:str, com:str):
     hostname = proc.stdout.decode().strip()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((ip, 54545))
-    s.send(f"output\n{hostname}.txt\n".encode())
+    s.send(f"output\n{hostname}.output\n".encode())
     proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE)
     for line in proc.stdout:
         print(line.decode().rstrip())
