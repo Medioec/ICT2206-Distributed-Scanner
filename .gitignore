@@ -137,8 +137,7 @@ dmypy.json
 .idea/misc.xml
 .idea/modules.xml
 .idea/vcs.xml
-directory-list-2.3-medium.txt
-directory-list.txt
-directory-list.txt0
-directory-list.txt1
-directory-list.txt2
+*.txt
+*.txt0
+*.txt1
+*.txt2

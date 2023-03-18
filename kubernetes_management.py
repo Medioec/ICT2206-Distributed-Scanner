@@ -21,15 +21,19 @@ def build_docker_image():
     subprocess.run(f"docker push {repo}".split())
 
 
-def get_all_pod_ips():
-    res = subprocess.run("sudo kubectl get pods -o=jsonpath=\"{range .items[*]}{.status.podIP}{','}{end}\"", shell=True, capture_output=True)
-    text = res.stdout.decode()
-    text = text[:-1]
-    ip_list = text.split(",")
+def get_all_pod_ips(vmcount: int):
+    while True:
+        res = subprocess.run("sudo kubectl get pods -o=jsonpath=\"{range .items[*]}{.status.podIP}{','}{end}\"", shell=True, capture_output=True)
+        text = res.stdout.decode()
+        text = text[:-1]
+        ip_list = text.split(",")
+        if len(ip_list) < vmcount:
+            continue
+        break
     for ip in ip_list:
         if ip == "":
             time.sleep(1)
-            ip_list = get_all_pod_ips()
+            ip_list = get_all_pod_ips(vmcount)
             break
     return ip_list
 

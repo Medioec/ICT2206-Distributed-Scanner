@@ -48,7 +48,7 @@ def handle_selection(usrinput:str, az:Azure):
         if vmcount == 0:
             print("No vms available")
             return
-        cmd_example = "\ngobuster dir -u https://www.redapplepie.com -w #wordlist#directory-list.txt\nhydra -l user -P #wordlist#password-list.txt www.redapplepie.com http-head /guac/\n"
+        cmd_example = "\ngobuster dir -u https://www.redapplepie.com -w #wordlist#list.txt\nhydra -l user -P #wordlist#list.txt www.redapplepie.com http-head /guac/\n"
         print(
             "Enter command to use for scanning\n"
             "Example syntax:\n"
@@ -59,7 +59,7 @@ def handle_selection(usrinput:str, az:Azure):
         )
         cmd = input("Enter command for scanning: ")
         start_daemon_set(vmcount)
-        ip_list = get_all_pod_ips()
+        ip_list = get_all_pod_ips(vmcount)
         parse_and_send_command(cmd, vmcount, ip_list)
     elif usrinput == 7:
         build_docker_image()
@@ -122,7 +122,7 @@ def thread_listener(conn: socket.socket):
     strtoken, sep, rem = strdata.partition("\n")
     if strtoken == "output":
         filename, sep, rem = rem.partition("\n")
-        fd = open(filename, "w")
+        fd = open(filename, "a")
         fd.write(rem)
         while True:
             recv = conn.recv(4096).decode()
