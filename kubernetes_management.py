@@ -2,7 +2,8 @@ import subprocess
 from models.vm import VM
 import time
 
-IMAGEFILE = "kaliscanner.tar"
+# Functions related to k3s/kubernetes
+
 
 def delete_node(vm: VM):
     node_name = vm.hostname.lower()
@@ -11,7 +12,6 @@ def delete_node(vm: VM):
 
 
 def build_docker_image():
-    filename = IMAGEFILE
     res = subprocess.run("git rev-parse --verify HEAD".split(), capture_output=True)
     hash = res.stdout.decode().strip()
     subprocess.run(f"docker image build image/. -t bunshinscanner:latest -t bunshinscanner:{hash}".split())

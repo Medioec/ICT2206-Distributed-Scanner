@@ -16,6 +16,8 @@ from kubernetes_management import delete_node
 
 SCANNERDATAFILE = "scannerdata.json"
 
+# Functions related to Azure management
+
 
 class Azure:
     rg_list: list[Azrg] = None

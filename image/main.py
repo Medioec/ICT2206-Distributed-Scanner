@@ -1,10 +1,11 @@
 from time import sleep
-import sys
 import socket
 import threading
 import subprocess
-import time
 import datetime
+
+# python script that runs in container images on worker nodes
+
 
 def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -63,7 +64,7 @@ def run_and_transmit(ip:str, com:str):
     s.send(f"output\n{first_token + hostname}.output\n\nTime: {ts} Command: {com}\n\n".encode())
     proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE)
     for line in proc.stdout:
-        print(line.decode().rstrip())
+        print(line.decode().strip())
         s.send(line)
     status = proc.poll()
     if status != 0:

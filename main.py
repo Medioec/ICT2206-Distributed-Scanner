@@ -90,7 +90,7 @@ def parse_and_send_command(cmd: str, num: int, ip_list: list[str]):
     for i in range(num):
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((ip_list[i], 54545))
-        fd = open(filename + str(i), "r")
+        fd = open(f"{filename}{i}", "r")
         filestr = "".join(fd.readlines())
         textstr = f"wordlist\n{filename}\n" + filestr
         pbytes = bytes(textstr, "utf-8")

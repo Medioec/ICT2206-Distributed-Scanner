@@ -9,6 +9,9 @@ from azure.mgmt.network.models import NetworkSecurityGroup, SecurityRule
 from models.resource_group import AZResourceGroup as Azrg
 import utility
 
+# Functionality for provisioning Azure resources
+
+
 NAME_PREFIX = "BunshinScanner"
 VMUSERNAME = "bunshin"
 
