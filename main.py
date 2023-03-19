@@ -5,6 +5,7 @@ from kubernetes_management import *
 import utility
 import socket
 import threading
+import datetime
 
 
 def main(argv):
@@ -124,14 +125,20 @@ def thread_listener(conn: socket.socket):
     strtoken, sep, rem = strdata.partition("\n")
     if strtoken == "output":
         filename, sep, rem = rem.partition("\n")
-        fd = open(filename, "a")
+        ts = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+        fd = open(filename, "a", encoding="utf-8")
+        start_text = f"\nConnection received: {ts}\n"
+        fd.write(start_text)
         fd.write(rem)
         while True:
-            recv = conn.recv(4096).decode()
+            recv = conn.recv(4096).decode("utf-8", "ignore")
             if not recv:
                 break
             fd.write(recv)
             fd.flush()
+        ts = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
+        end_text = f"\nConnection terminated: {ts}\n"
+        fd.write(end_text)
         fd.close()
     return
 

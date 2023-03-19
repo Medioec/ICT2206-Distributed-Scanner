@@ -17,6 +17,7 @@ def build_docker_image():
     subprocess.run(f"docker image build image/. -t bunshinscanner:latest -t bunshinscanner:{hash}".split())
     subprocess.run("docker image tag bunshinscanner:latest ec18815/bunshinscanner:latest".split())
     subprocess.run("docker login".split())
+    print("This feature is not validated with other dockerhub accounts, may need to edit source code")
     repo = input("Enter your docker repo (e.g. ec18815/bunshinscanner:latest): ")
     subprocess.run(f"docker push {repo}".split())
 

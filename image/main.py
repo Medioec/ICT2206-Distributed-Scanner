@@ -55,7 +55,7 @@ def run_command(ip: str, com: str):
 
 
 def run_and_transmit(ip:str, com:str):
-    ts = datetime.datetime.now().strftime("%d%m%Y, %H:%M:%S")
+    ts = datetime.datetime.now().strftime("%d/%m/%Y, %H:%M:%S")
     first_token, sep, rem = com.partition(" ")
     proc = subprocess.run(["hostname"], capture_output=True)
     hostname = proc.stdout.decode().strip()
@@ -64,8 +64,9 @@ def run_and_transmit(ip:str, com:str):
     s.send(f"output\n{first_token + hostname}.output\n\nTime: {ts} Command: {com}\n\n".encode())
     proc = subprocess.Popen(com, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     for line in proc.stdout:
-        print(line.decode().strip())
-        s.send(line)
+        line = line.decode()
+        print(line)
+        s.send(line.encode("utf-8", "ignore"))
     status = proc.poll()
     if status != 0:
         s.close()
